@@ -2,12 +2,13 @@ import 'screens.dart';
 
 class HomeW extends StatelessWidget {
   const HomeW ({super.key});
+
   @override
   Widget build(BuildContext context) {
-    late double screenWidth = MediaQuery.of(context).size.width;
-    late double screenHeight = MediaQuery.of(context).size.height;
+    // late double screenWidth = MediaQuery.of(context).size.width;
+    // late double screenHeight = MediaQuery.of(context).size.height;
 
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     final TextEditingController userController = TextEditingController(text: "");
     final TextEditingController passwordController = TextEditingController(text: "");
 
@@ -21,73 +22,101 @@ class HomeW extends StatelessWidget {
         ),
         child: Center(
           child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset("assets/images/logotext.png", height: 250),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset("assets/images/logotext.png", height: 250),
+                SizedBox(height: 50,),
 
-                  // ---------------------------------------------------------
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    margin: const EdgeInsets.fromLTRB(40, 20, 40, 20),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF5863F8),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color.fromARGB(78, 0, 0, 0),
-                          blurRadius: 5,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
+                // ---------------------------------------------------------
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  margin: const EdgeInsets.fromLTRB(40, 20, 40, 20),
+                  decoration: BoxDecoration(
+                    color: Color(0xFF5863F8),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color.fromARGB(78, 0, 0, 0),
+                        blurRadius: 5,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
 
+                  child: Form(
+                    key: formKey,
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text("Usuario",style: GoogleFonts.kanit(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 10),
-                        Container(
-                          decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(5)),
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: TextFormField(
-                            decoration: InputDecoration(hintText: "Ingrese su usuario",border: InputBorder.none,),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "El usuario es obligatorio";
-                              }
-                              return null;
-                            },
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text("Usuario",style: GoogleFonts.kanit(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 10),
+                      Container(
+                        decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(5)),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            hintText: "Ingrese su usuario",
+                            border: InputBorder.none,
+                            errorStyle: TextStyle(color: const Color.fromARGB(255, 4, 0, 255)),
                           ),
+                          controller: userController,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "El usuario es obligatorio";
+                            }
+                            if (!RegExp(r'^[a-zA-Z0-9]{6,}$').hasMatch(value)) {
+                              return "El usuario es de 6 carácteres mínimo";
+                            }
+                            return null;
+                          },
                         ),
-                        SizedBox(height: 20),
+                      ),
+                      SizedBox(height: 20),
 
-                        Text("Contraseña",style: GoogleFonts.kanit(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 10),
-                        Container(
-                          decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(5)),
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: TextFormField(obscuringCharacter: '⬤', obscureText: true,
-                            decoration: InputDecoration(hintText: "Ingrese su contraseña",border: InputBorder.none,),
-                          
+                    Text("Contraseña",style: GoogleFonts.kanit(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
+                          Container(
+                            decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(5)),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: TextFormField(obscuringCharacter: '⬤', obscureText: true, 
+                              decoration: InputDecoration(
+                                hintText: "Ingrese su contraseña",
+                                border: InputBorder.none,
+                                errorStyle: TextStyle(color: const Color.fromARGB(255, 4, 0, 255)),
+                              ),
+                              controller: passwordController,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "La contraseña es obligatoria";
+                                }
+                                if (!RegExp(r'^[a-zA-Z0-9]{6,}$').hasMatch(value)) {
+                                  return "La contraseña es de 6 carácteres mínimo";
+                                }
+                                return null;
+                              },
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 10),
-                      ],
+                          SizedBox(height: 10),
+                        ],
+                      ),
                     ),
                   ),
                   // ---------------------------------------------------------
                   
-                  SizedBox(height: 100,),
+                  SizedBox(height: 40,),
 
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.pushNamed(context, "/Register");
+                        },
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                           textStyle: GoogleFonts.kanit(fontSize: 20, fontWeight: FontWeight.w500),
@@ -108,11 +137,13 @@ class HomeW extends StatelessWidget {
 
                       ElevatedButton(
                         onPressed: () {
-                          bool? isValid = _formKey.currentState?.validate();
+                          bool? isValid = formKey.currentState?.validate();
 
                           if (isValid != null) {
                             if (isValid) {
                               print("Is valid");
+                            } else {
+                              print("Is NOT valid");
                             }
                           }
                         },
@@ -133,8 +164,7 @@ class HomeW extends StatelessWidget {
                       ),
                       SizedBox(width: 15,),
                     ],
-                  )
-                  
+                  ),
                 ],
               ),
             )

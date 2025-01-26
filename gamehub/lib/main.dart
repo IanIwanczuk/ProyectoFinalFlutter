@@ -20,7 +20,7 @@ void main() => runApp(
     ),
     title: 'Rutas',
     debugShowCheckedModeBanner: false,
-    initialRoute: AppRoutes.home,
+    initialRoute: AppRoutes.register,
     routes: AppRoutes.routes
   )
 );
