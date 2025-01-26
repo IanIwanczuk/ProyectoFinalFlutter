@@ -1,3 +1,5 @@
+import 'package:gamehub/routes/routes.dart';
+import '../models/current_user.dart';
 import 'screens.dart';
 
 class HomeW extends StatelessWidget {
@@ -11,6 +13,7 @@ class HomeW extends StatelessWidget {
     final formKey = GlobalKey<FormState>();
     final TextEditingController userController = TextEditingController(text: "");
     final TextEditingController passwordController = TextEditingController(text: "");
+    DatabaseService dbService = DatabaseService();
 
     return Scaffold(
       body: Container(
@@ -136,14 +139,25 @@ class HomeW extends StatelessWidget {
                       SizedBox(width: 10),
 
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           bool? isValid = formKey.currentState?.validate();
 
                           if (isValid != null) {
                             if (isValid) {
-                              print("Is valid");
+                              currentUser = await dbService.isUserValid(userController.text, passwordController.text);
+
+                              if (currentUser != null) {
+                                print("El usuario SI EXISTE");
+                                // ignore: use_build_context_synchronously
+                                Navigator.pop(context);
+                                // ignore: use_build_context_synchronously
+                                Navigator.pushNamed(context, AppRoutes.homescreen);
+                              } else {
+                                print("El usuario NO EXISTE");
+                              }
+
                             } else {
-                              print("Is NOT valid");
+                              print("Form is NOT valid");
                             }
                           }
                         },

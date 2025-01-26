@@ -1,6 +1,6 @@
-import 'package:flutter/services.dart';
-
 import 'screens.dart';
+import '../models/user.dart';
+import '../routes/routes.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -19,11 +19,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController userController = TextEditingController(text: "");
   final TextEditingController password1Controller = TextEditingController(text: "");
   final TextEditingController password2Controller = TextEditingController(text: "");
+  DatabaseService dbService = DatabaseService();
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -239,12 +238,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     SizedBox(width: 10),
 
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         bool? isValid = formKey.currentState?.validate();
 
                         if (isValid != null) {
                           if (isValid) {
-                            print("Is valid");
+                            bool userAvl = await dbService.isUserAvailable(userController.text);
+                            bool emailAvl = await dbService.isEmailAvailable(correoController.text);
+
+                            if (userAvl && emailAvl) {
+                              String sex = selectedSex!;
+                              User nuevo = User(email: correoController.text, user: userController.text, pwd: password1Controller.text, sex: sex);
+
+                              dbService.addUser(nuevo);
+
+                              print("Usuario REGISTRADO con éxito");
+                              // ignore: use_build_context_synchronously
+                              Navigator.pop(context);
+                              // ignore: use_build_context_synchronously
+                              Navigator.pushNamed(context, AppRoutes.login);
+                            } else {
+                              print("Este usuario YA EXISTE");
+                            }
                           } else {
                             print("Is NOT valid");
                           }
