@@ -11,28 +11,23 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );  
   FirebaseFirestore.instance.settings = const Settings(
-    persistenceEnabled: true, 
+    persistenceEnabled: true,
   );
   runApp(
     MaterialApp(
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: Colors.black,
-        scaffoldBackgroundColor: const Color.fromRGBO(255, 250, 210, 1),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 226, 249, 255),
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.black,
-          foregroundColor: Color.fromARGB(255, 159, 104, 0),
-          iconTheme: IconThemeData(color: Color.fromARGB(255, 169, 112, 0)),
-        ),
-        textTheme: const TextTheme(
-          titleLarge: TextStyle(  
-              fontWeight: FontWeight.bold, color: Colors.blue),
-          bodyMedium: TextStyle(color: Colors.black87),
+          foregroundColor: Color.fromARGB(255, 255, 255, 255),
+          iconTheme: IconThemeData(color: Color.fromARGB(255, 255, 255, 255)),
         ),
       ),
-      title: 'Rutas',
+      title: 'GameHub',
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.login,
+      initialRoute: AppRoutes.blackjack,
       routes: AppRoutes.routes
     )
   );

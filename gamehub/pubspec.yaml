@@ -69,6 +69,8 @@ flutter:
     - assets/images/logotext.png
     - assets/images/ojos.png
     - assets/images/joystick.png
+    - assets/images/backbutton.png
+    - assets/images/logout.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

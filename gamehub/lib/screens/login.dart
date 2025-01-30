@@ -179,6 +179,7 @@ class HomeW extends StatelessWidget {
                       SizedBox(width: 15,),
                     ],
                   ),
+                  SizedBox(height: 20,)
                 ],
               ),
             )
