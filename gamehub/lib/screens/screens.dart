@@ -11,3 +11,5 @@ export 'register.dart';
 export 'home.dart';
 export 'user_data.dart';
 export 'blackjack.dart';
+export 'countries.dart';
+export 'hangman.dart';

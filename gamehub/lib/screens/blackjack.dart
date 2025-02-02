@@ -20,7 +20,10 @@ class _BlackjackState extends State<Blackjack> {
       appBar: getAppBar(context, AppRoutes.homescreen, "backbutton.png"),
       body: Container(
         decoration: BoxDecoration(
-          color: Colors.green,
+          image: DecorationImage(
+            image: AssetImage('assets/images/blackjackbg.png'),
+            fit: BoxFit.cover,
+          ),
         ),
       ),
       floatingActionButton: Row(

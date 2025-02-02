@@ -1,130 +1,201 @@
-import 'package:flutter/material.dart';
+import 'package:gamehub/models/current_user.dart';
+import 'package:gamehub/models/user.dart';
+
+import 'screens.dart';
 
 
-class UpdateData extends StatelessWidget {
+class UpdateData extends StatefulWidget {
   const UpdateData({super.key});
+
+  @override
+  State<UpdateData> createState() => _UpdateDataState();
+}
+class _UpdateDataState extends State<UpdateData> {
+  late double screenWidth = MediaQuery.of(context).size.width;
+  final formKey = GlobalKey<FormState>();
+
+  final TextEditingController usuarioController = TextEditingController(text: currentUser!.user);
+  final TextEditingController correoController = TextEditingController(text: currentUser!.email);
+  final TextEditingController passwordController = TextEditingController(text: "");
+
+  DatabaseService dbService = DatabaseService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
-        ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.sports_esports),
-            const SizedBox(width: 8),
-            const Text('GAMEHUB'),
-          ],
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.black,
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          width: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF7BE9FF), Color(0xFF3CA4FF)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
+      appBar: getAppBar(context, AppRoutes.homescreen, "backbutton.png"),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/updatebg.png'),
+            fit: BoxFit.cover,
           ),
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text(
-                'Actualización de datos',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontFamily: 'monospace',
-                  color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Usuario',
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
+        ),
+
+        child: Center(
+
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 20,),
+                Text('Actualización de datos',style: GoogleFonts.pressStart2p(height: 1, fontSize: 25,color: Color(0xFF345A7E),shadows: [Shadow(color: const Color.fromARGB(70, 0, 0, 0), blurRadius: 14, offset: Offset(0, 4),),],),textAlign: TextAlign.center,),
+                const SizedBox(height: 10),
+                Text(capitalizeFirstLetter(currentUser!.user), style: GoogleFonts.rowdies(fontSize: 65,fontWeight: FontWeight.bold, color: Colors.black, shadows: [Shadow(color: const Color.fromARGB(70, 0, 0, 0), blurRadius: 14, offset: Offset(0, 4),),],),),
+                const SizedBox(height: 20),
+
+                Container(
+                  height: 5,
+                  width: screenWidth - 20,
                   color: Colors.black,
                 ),
-              ),
-              const SizedBox(height: 10),
-              const Divider(
-                thickness: 2,
-                color: Colors.black,
-                indent: 50,
-                endIndent: 50,
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Ingrese los datos que desee actualizar',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black87,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-              buildInputField(label: 'Correo', hintText: 'Correo electrónico'),
-              const SizedBox(height: 10),
-              buildInputField(label: 'Usuario', hintText: 'Nombre de usuario'),
-              const SizedBox(height: 10),
-              buildInputField(label: 'Contraseña', hintText: 'Contraseña'),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 50,
-                    vertical: 15,
+
+                SizedBox(
+                  width: screenWidth - 20,
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+                        Text('Ingrese los datos que desee actualizar', style: GoogleFonts.varela(fontSize: 18, color: Colors.black87,),),
+                        const SizedBox(height: 15),
+
+                        Row(mainAxisAlignment: MainAxisAlignment.start,children: [Text("Usuario",style: GoogleFonts.josefinSans(color: const Color(0xFF007E87),fontSize: 22,fontWeight: FontWeight.bold)),],), SizedBox(height: 5,),
+                        Container(
+                          decoration: BoxDecoration(color: Color(0xFF05D9E8),borderRadius: BorderRadius.circular(5)),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: buildInputField('Nombre de usuario', usuarioController, userValidator),
+                        ),
+                        const SizedBox(height: 10),
+
+                        Row(mainAxisAlignment: MainAxisAlignment.start,children: [Text("Correo electrónico",style: GoogleFonts.josefinSans(color: const Color(0xFF007E87),fontSize: 22,fontWeight: FontWeight.bold)),],), SizedBox(height: 5,),
+                        Container(
+                          decoration: BoxDecoration(color: Color(0xFF05D9E8),borderRadius: BorderRadius.circular(5)),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: buildInputField('Nuevo correo electrónico', correoController, emailValidator),
+                        ),
+                        const SizedBox(height: 10),
+
+                        Row(mainAxisAlignment: MainAxisAlignment.start,children: [Text("Contraseña",style: GoogleFonts.josefinSans(color: const Color(0xFF007E87),fontSize: 22,fontWeight: FontWeight.bold)),],), SizedBox(height: 5,),
+                        Container(
+                          decoration: BoxDecoration(color: Color(0xFF05D9E8),borderRadius: BorderRadius.circular(5)),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: TextFormField(
+                            obscureText: true, obscuringCharacter: "⬤",
+                            decoration: InputDecoration(
+                              hintText: "Repita o cambie la contraseña",
+                              border: InputBorder.none,
+                              errorStyle: TextStyle(color: const Color.fromARGB(255, 47, 0, 255)),
+                            ),
+                            controller: passwordController,
+                            validator: passwordValidator,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    ), 
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
+                ),
+
+                SizedBox(height: 50,),
+                
+                ElevatedButton(
+                  onPressed: () async {
+                    bool? isValid = formKey.currentState?.validate();
+                    if (isValid != null) {
+                      if (isValid) {
+                        User usuario = currentUser!.copyWith(user: currentUser!.user, email: currentUser!.email, pwd: currentUser!.pwd, sex: currentUser!.sex);
+                        bool changed = false;
+
+                        if (usuarioController.text != usuario.user) {
+                          usuario.user = usuarioController.text; changed = true;
+                        }
+                        if (correoController.text != usuario.email) {
+                          usuario.email = correoController.text; changed = true;
+                        }
+                        if (passwordController.text != usuario.pwd) {
+                          usuario.pwd = passwordController.text; changed = true;
+                        }
+
+                        if (changed) {
+                          dbService.updateUser(currentId!, usuario);
+                          currentUser = usuario;
+                          setState(() {
+                            alertDialog(context, "Modificacón", "Se han actualizado sus datos correctamente");
+                          });
+                        }
+                      } else {
+                        alertDialog(context, "Error", "Hay datos ingresados incorrectamente");
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                    textStyle: GoogleFonts.kanit(fontSize: 20, fontWeight: FontWeight.w500),
+                    backgroundColor: Color(0xFF5FBFF9),
+                    shadowColor: Color(0x005FBEF9),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40),
+                      side: BorderSide(
+                        color: Color.fromARGB(255, 0, 17, 255),
+                        width: 1,
+                      ),
+                    ),
                   ),
+                  child: Text('Actualizar', style: TextStyle(color: Color(0xFF2731B6))),
                 ),
-                child: const Text(
-                  'Actualizar',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-            ],
+                SizedBox(height: 50,),
+                const Text("IanIwanczuk © 2025", style: TextStyle(color: Color.fromARGB(255, 0, 89, 161)),),
+                SizedBox(height: 20,),
+              ],
+            ),
           ),
         ),
-      ),
+      )
     );
   }
 
-  Widget buildInputField({required String label, required String hintText}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 5),
-        TextField(
-          decoration: InputDecoration(
-            hintText: hintText,
-            filled: true,
-            fillColor: Colors.cyanAccent,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-          ),
-        ),
-      ],
+  TextFormField buildInputField(String hintText, TextEditingController controller, String? Function(String?) validator) {
+    return TextFormField(
+      decoration: InputDecoration(
+        hintText: hintText,
+        border: InputBorder.none,
+        errorStyle: TextStyle(color: const Color.fromARGB(255, 47, 0, 255)),
+      ),
+      controller: controller,
+      validator: validator,
     );
   }
+
+  String? passwordValidator(String? value) {
+    if (value!.isEmpty) {
+      return "La contraseña es obligatoria";
+    }
+    if (!RegExp(r'^[a-zA-Z0-9]{6,}$').hasMatch(value)) {
+      return "La contraseña es de 6 carácteres mínimo";
+    }
+    return null;
+  }
+
+  String? emailValidator(String? value) {
+    if (value!.isEmpty) {
+      return "El correo es obligatorio";
+    }
+    if (!RegExp(r'[a-z0-9._-]+@[a-z]+\.[a-z]{2,}').hasMatch(value)) {
+      return "Formato del correo inválido";
+    }
+    return null;
+  }
+
+  String? userValidator(String? value) {
+    if (value!.isEmpty) {
+      return "El usuario es obligatorio";
+    }
+    if (!RegExp(r'^[a-zA-Z0-9]{6,}$').hasMatch(value)) {
+      return "El usuario es de 6 carácteres mínimo";
+    }
+    return null;
+  }
+  
 }

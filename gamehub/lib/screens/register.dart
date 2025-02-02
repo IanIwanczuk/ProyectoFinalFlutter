@@ -1,6 +1,5 @@
 import 'screens.dart';
 import '../models/user.dart';
-import '../routes/routes.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -75,7 +74,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             border: InputBorder.none,
                             errorStyle: TextStyle(color: const Color.fromARGB(255, 4, 0, 255)),
                           ),
-                          controller: correoController,                  // CONTROLLER
+                          controller: correoController,                     // CONTROLLER
                           validator: (value) {                              // VALIDATOR
                             if (value!.isEmpty) {
                               return "El correo es obligatorio";
@@ -207,9 +206,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-                
-                // SizedBox(height: 100,),
 
+                // SizedBox(height: 100,),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -252,16 +250,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                               dbService.addUser(nuevo);
 
-                              print("Usuario REGISTRADO con éxito");
                               // ignore: use_build_context_synchronously
                               Navigator.pop(context);
                               // ignore: use_build_context_synchronously
                               Navigator.pushNamed(context, AppRoutes.login);
+                              // ignore: use_build_context_synchronously
+                              alertDialog(context, "Registrado", "El usuario ha sido registrado correctamente");
                             } else {
-                              print("Este usuario YA EXISTE");
+                              // ignore: use_build_context_synchronously
+                              alertDialog(context, "Error", "Estas credenciales ya están en uso, pruebe con otro correo o usuario");
                             }
                           } else {
-                            print("Is NOT valid");
+                            alertDialog(context, "Error", "Hay datos ingresados incorrectamente");
                           }
                         }
                       },

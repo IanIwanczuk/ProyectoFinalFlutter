@@ -6,6 +6,8 @@ class AppRoutes {
   static const String homescreen = '/Homescreen';
   static const String updatedata = '/Updatescreen';
   static const String blackjack = '/Blackjack';
+  static const String hangman = '/Hangman';
+  static const String countries = '/Countries';
 
 
   // Mapa de rutas
@@ -15,5 +17,7 @@ class AppRoutes {
     homescreen: (context) => const HomeScreen(),
     updatedata: (context) => const UpdateData(),
     blackjack: (context) => const Blackjack(),
+    hangman: (context) => const Hangman(),
+    countries: (context) => const Countries(),
   };
 }

@@ -1,4 +1,3 @@
-import 'package:gamehub/routes/routes.dart';
 import '../models/current_user.dart';
 import 'screens.dart';
 
@@ -147,17 +146,17 @@ class HomeW extends StatelessWidget {
                               currentUser = await dbService.isUserValid(userController.text, passwordController.text);
 
                               if (currentUser != null) {
-                                print("El usuario SI EXISTE");
                                 // ignore: use_build_context_synchronously
                                 Navigator.pop(context);
                                 // ignore: use_build_context_synchronously
                                 Navigator.pushNamed(context, AppRoutes.homescreen);
                               } else {
-                                print("El usuario NO EXISTE");
+                                // ignore: use_build_context_synchronously
+                                alertDialog(context, "Inexistente", "No se ha encontrado un usuario con estas credenciales");
                               }
 
                             } else {
-                              print("Form is NOT valid");
+                              alertDialog(context, "Error", "Hay datos ingresados incorrectamente");
                             }
                           }
                         },

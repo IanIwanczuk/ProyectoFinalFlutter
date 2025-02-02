@@ -27,7 +27,7 @@ void main() async {
       ),
       title: 'GameHub',
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoutes.blackjack,
+      initialRoute: AppRoutes.login,
       routes: AppRoutes.routes
     )
   );
