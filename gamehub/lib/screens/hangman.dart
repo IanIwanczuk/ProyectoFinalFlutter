@@ -180,7 +180,7 @@ class _HangmanState extends State<Hangman> {
                 Column(
                   children: [
                     Text(
-                      _isGameWon ? 'You Win!' : 'Game Over!',
+                      _isGameWon ? 'Ganaste' : 'Perdiste',
                       style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
