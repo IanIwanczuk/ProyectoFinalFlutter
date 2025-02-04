@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/services.dart';
-
 import '../screens/screens.dart';
 
 class Hangman extends StatefulWidget {
@@ -189,7 +188,7 @@ class _HangmanState extends State<Hangman> {
           ),
         ),
         child: Center(
-          child: secretWord == null ? const CircularProgressIndicator() : SingleChildScrollView(
+          child: secretWord == null ? const CircularProgressIndicator(color: Colors.red,) : SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
               children: [
