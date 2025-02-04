@@ -13,86 +13,111 @@ class Hangman extends StatefulWidget {
 }
 
 class _HangmanState extends State<Hangman> {
-  List<String> _words = [];
-  String? _secretWord;
-  final Set<String> _guessedLetters = {};
-  int _errorCount = 0;
-  final int _maxErrors = 6;
-  bool _isGameOver = false;
-  bool _isGameWon = false;
+  // Cargamos el JSON con todas las palabras posibles, para luego poder repetir el juego sin tener que cargar esto denuevo
+  List<String> words = [];
+  // Palabra secreta a adivinar
+  String? secretWord;
+  // Set de letras que el usuario escoge para adivinar
+  final Set<String> guessedLetters = {};
+
+  // Conteo de errores, y los errores máximos que podemos tener
+  int errorCount = 0;
+  final int maxErrors = 6;
+
+  // Si el juego ha terminado y si se ha ganado o perdido
+  bool isGameOver = false;
+  bool isGameWon = false;
 
   @override
   void initState() {
     super.initState();
-    _loadWords();
+
+    // Cargamos todas las palabras y comenzamos la partida
+    loadWords();
   }
 
-  Future<void> _loadWords() async {
+  // Método
+  Future<void> loadWords() async {
     try {
       final String data = await rootBundle.loadString('lib/resources/words.json');
       final List<dynamic> jsonResult = json.decode(data);
       setState(() {
-        _words = jsonResult.cast<String>();
-        _startNewGame();
+        words = jsonResult.cast<String>();
+        startNewGame();
       });
     } catch (e) {
-      debugPrint("Error loading words: $e");
+      // ignore: use_build_context_synchronously
+      alertDialog(context, "Error cargando las palabras", "Ha ocurrido un error al cargar las palabras");
     }
   }
 
-  void _startNewGame() {
+  void startNewGame() {
     setState(() {
-      _guessedLetters.clear();
-      _errorCount = 0;
-      _isGameOver = false;
-      _isGameWon = false;
-      if (_words.isNotEmpty) {
+      guessedLetters.clear();
+      errorCount = 0;
+      isGameOver = false;
+      isGameWon = false;
+      if (words.isNotEmpty) {
         final random = Random();
-        _secretWord = _words[random.nextInt(_words.length)].toUpperCase();
+        secretWord = words[random.nextInt(words.length)].toUpperCase();
       } else {
-        _secretWord = null;
+        secretWord = null;
       }
     });
   }
 
-  void _guessLetter(String letter) {
-    if (_isGameOver || _secretWord == null || _guessedLetters.contains(letter)) return;
+  void guessLetter(String letter) {
+    // Si el juego ya está terminado, o la palabra sedcreta es NULL, o si la letra que toca el
+    // usuario ya la tocó anteriormente, salimos de este método y no verificamos nada. 
+    if (isGameOver || secretWord == null || guessedLetters.contains(letter)) return;
 
     setState(() {
-      _guessedLetters.add(letter);
+      guessedLetters.add(letter);
 
-      if (!_secretWord!.contains(letter)) {
-        _errorCount++;
-        if (_errorCount >= _maxErrors) {
-          _isGameOver = true;
+      // La palabra secreta NO contiene la palabra, aumentamos el contador de errores
+      if (!secretWord!.contains(letter)) {
+        errorCount++;
+        // Si llegamos a la cantidad maxima de errores, terminamos
+        if (errorCount == maxErrors) {
+          isGameOver = true;
         }
       } else {
         bool allGuessed = true;
-        for (int i = 0; i < _secretWord!.length; i++) {
-          if (!_guessedLetters.contains(_secretWord![i])) {
+
+        /**
+         * Verificamos si el array de letras adivinadas contiene TODAS las letras de
+         * la palabra secreta. Si es así, terminamos el juego y lo damos como GANADO
+         */
+        for (int i = 0; i < secretWord!.length; i++) {
+          if (!guessedLetters.contains(secretWord![i])) {
             allGuessed = false;
             break;
           }
         }
         if (allGuessed) {
-          _isGameWon = true;
-          _isGameOver = true;
+          isGameWon = true;
+          isGameOver = true;
         }
       }
     });
   }
 
-  Widget _buildWordDisplay() {
-    if (_secretWord == null) return Container();
+  Widget buildWordDisplay() {
+    if (secretWord == null) return Container();
 
     List<Widget> letters = [];
-    for (int i = 0; i < _secretWord!.length; i++) {
-      String char = _secretWord![i];
+    for (int i = 0; i < secretWord!.length; i++) {
+      String char = secretWord![i];
       letters.add(
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: Text(
-            _guessedLetters.contains(char) ? char : '_',
+          child: isGameOver
+          ? Text(
+            secretWord![i],
+            style: GoogleFonts.jollyLodger(fontSize: 50, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 15),
+          )
+          : Text(
+            guessedLetters.contains(char) ? char : '_',
             style: GoogleFonts.jollyLodger(fontSize: 50, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 15),
           ),
         ),
@@ -104,22 +129,22 @@ class _HangmanState extends State<Hangman> {
     );
   }
 
-  Widget _buildLetterButton(String letter) {
+  Widget buildLetterButton(String letter) {
     return Padding(
       padding: const EdgeInsets.all(2.0),
       child: ElevatedButton(
-        onPressed: _guessedLetters.contains(letter) || _isGameOver ? null : () => _guessLetter(letter),
+        onPressed: guessedLetters.contains(letter) || isGameOver ? null : () => guessLetter(letter),
         style: ElevatedButton.styleFrom(
-          backgroundColor: _guessedLetters.contains(letter) || _isGameOver
+          backgroundColor: guessedLetters.contains(letter) || isGameOver
               ? Colors.transparent
               : Color.fromARGB(255, 139, 0, 0),
-          shadowColor: _guessedLetters.contains(letter) || _isGameOver
+          shadowColor: guessedLetters.contains(letter) || isGameOver
               ? Colors.transparent
               : Color(0x005FBEF9),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(
-              color: _guessedLetters.contains(letter) || _isGameOver
+              color: guessedLetters.contains(letter) || isGameOver
                   ? Colors.transparent
                   : Color.fromARGB(255, 255, 82, 82),
               width: 1,
@@ -127,7 +152,7 @@ class _HangmanState extends State<Hangman> {
           ),
         ),
         child: Text(letter, style: GoogleFonts.kanit(
-          color: _guessedLetters.contains(letter) || _isGameOver ? Colors.transparent : Color.fromARGB(255, 255, 82, 82),
+          color: guessedLetters.contains(letter) || isGameOver ? Colors.transparent : Color.fromARGB(255, 255, 82, 82),
           fontSize: 20,
           fontWeight: FontWeight.w400),
         ),
@@ -135,16 +160,16 @@ class _HangmanState extends State<Hangman> {
     );
   }
 
-  Widget _buildLetterButtons() {
+  Widget buildLetterButtons() {
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     return Wrap(
       alignment: WrapAlignment.center,
-      children: letters.split('').map((letter) => _buildLetterButton(letter)).toList(),
+      children: letters.split('').map((letter) => buildLetterButton(letter)).toList(),
     );
   }
 
-  Widget _buildHangmanImage() {
-    String imagePath = 'assets/images/hangman$_errorCount.png';
+  Widget buildHangmanImage() {
+    String imagePath = 'assets/images/hangman$errorCount.png';
     return Image.asset(
       imagePath,
       height: 200,
@@ -163,41 +188,48 @@ class _HangmanState extends State<Hangman> {
             fit: BoxFit.cover,
           ),
         ),
-        // The game UI starts here.
         child: Center(
-          child: _secretWord == null ? const CircularProgressIndicator() : SingleChildScrollView(
+          child: secretWord == null ? const CircularProgressIndicator() : SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildHangmanImage(),
-              const SizedBox(height: 20),
-              _buildWordDisplay(),
-              const SizedBox(height: 20),
-              _buildLetterButtons(),
-              const SizedBox(height: 20),
-              // Show game over or win messages.
-              if (_isGameOver)
-                Column(
-                  children: [
-                    Text(
-                      _isGameWon ? 'You Win!' : 'Game Over!',
-                      style: const TextStyle(
+              children: [
+                buildHangmanImage(),
+                const SizedBox(height: 20),
+                buildWordDisplay(),
+                const SizedBox(height: 20),
+                if (isGameOver)
+                  Column(
+                    children: [
+                      SizedBox(height: 20),
+                      Text(
+                        isGameWon ? 'Congratulations, you win!' : 'Womp womp, game Over!',
+                        style: GoogleFonts.kanit(
                           fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'The word was: ${_secretWord!}',
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _startNewGame,
-                      child: const Text('Restart Game'),
-                    ),
-                  ],
-                ),
+                          color: Colors.red
+                        ),
+                      ),
+                      SizedBox(height: 50),
+                      ElevatedButton(
+                        onPressed: startNewGame,
+                        style: ElevatedButton.styleFrom(
+                          shadowColor: const Color.fromARGB(0, 255, 255, 255),
+                          backgroundColor: const Color.fromARGB(255, 112, 7, 0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            side: BorderSide(
+                              color: Color.fromARGB(255, 255, 0, 0),
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                        child: Text('Try again?', style: GoogleFonts.jollyLodger(fontSize: 30, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 219, 0, 0), letterSpacing: 4),),
+                      ),
+                      SizedBox(height: 60,)
+                    ],
+                  ),
+                if (!isGameOver)
+                  buildLetterButtons(),
+                const SizedBox(height: 20),
               ],
             ),
           ),
