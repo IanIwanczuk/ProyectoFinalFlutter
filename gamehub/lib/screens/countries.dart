@@ -19,13 +19,23 @@ class _CountriesState extends State<Countries> {
   List<Map<String, dynamic>> options = [];
   
   Map<String, dynamic>? secretCountry;
-  bool isGameOver = false;
+  late bool isGameOver;
+  late bool isGameWon;
   late int correctAnswer;
+  late int count;
 
 
   @override
   void initState() {
     super.initState();
+    count = 0;
+    startGame();
+  }
+
+  startNewGame() {
+    if (!isGameWon) {
+      count = 0;
+    }
     startGame();
   }
 
@@ -48,7 +58,9 @@ class _CountriesState extends State<Countries> {
       }
       options.add(countryList[randomIndex]); count++;
     }
-    setState(() {});
+    setState(() {
+      isGameOver = false; isGameWon = false;
+    });
   }
 
   Future<List<Map<String, dynamic>>> getCountryList() async {
@@ -67,8 +79,8 @@ class _CountriesState extends State<Countries> {
   }
 
   void onTimerReset() {
-    print("Tiempo acabado");
-    isGameOver = true;
+    isGameOver = true; isGameWon = false;
+    options.clear();
     setState(() {});
   }
 
@@ -90,6 +102,7 @@ class _CountriesState extends State<Countries> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                Text("$count", textAlign: TextAlign.center, style: GoogleFonts.fredoka(fontSize: 25, color: const Color.fromARGB(255, 0, 65, 2)),),
                 Container(
                   margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
                   decoration: BoxDecoration(
@@ -112,32 +125,85 @@ class _CountriesState extends State<Countries> {
                   ),
                 ),
                 SizedBox(height: 20,),
-                if (!isGameOver)
-                  GridView.builder(
-                    shrinkWrap: true,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, // ✅ 2 columns
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                    ),
-                    itemCount: 4,
-                    itemBuilder: (context, index) {
-                      final option = options[index];
 
-                      return ElevatedButton(
-                        onPressed: () => {
-                          if (option.values.first == secretCountry!.values.first) {
-                            print("EXITO... Opción: ${option.values.first}  Respuesta: ${secretCountry!.values.first}"),
-                          } else {
-                            print("ERROR!!! Opción: ${option.values.first}  Respuesta: ${secretCountry!.values.first}"),
-                          }
-                        },
-                        child: Text(option.values.first),
-                      );
+                if (isGameOver)
+                  Column(
+                    children: [
+                      SizedBox(height: 20),
+                      Text(secretCountry!.values.first, textAlign: TextAlign.center, style: GoogleFonts.fredoka(fontSize: secretCountry!.values.first.length > 9 ? 40 : 60, color: isGameWon ? const Color.fromARGB(255, 0, 65, 2) : const Color.fromARGB(255, 65, 4, 0)),),
+                      SizedBox(height: 40,),
+                    ],
+                  ),
+                if (isGameOver)
+                  ElevatedButton(
+                    onPressed: () {
+                      options.clear();
+                      startNewGame();
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isGameWon ? Colors.green : Colors.red,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      elevation: 4,
+                    ),
+                    child: Text(isGameWon ? "Siguiente" : "Reintentar", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                  ),
+
+                if (!isGameOver)
+                  SizedBox(height: 40,),
+                if (!isGameOver)
+                  SizedBox(
+                    width: screenWidth-20,
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        mainAxisExtent: 80, 
+                      ),
+                      itemCount: 4,
+                      itemBuilder: (context, index) {
+                        final option = options[index];
+
+                        return ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                            backgroundColor: Colors.white,
+                            elevation: 2,
+                            shadowColor: Color.fromARGB(255, 0, 0, 0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                              side: BorderSide(
+                                color: Color(0xFF855B00),
+                                width: 1,
+                              ),
+                            ),
+                          ),
+                          onPressed: () => {
+                            isGameOver = true,
+
+                            if (option.values.first == secretCountry!.values.first) {
+                              isGameWon = true,
+                              count++,
+                            } else {
+                              isGameWon = false,
+                            },
+                            setState(() {}),
+                          },
+                          child: Text(option.values.first, textAlign: TextAlign.center, style: GoogleFonts.krub(fontSize: options[index].values.first.length > 14 ? 15 : 20, fontWeight: FontWeight.w500, color: Color(0xFF855B00)),) ,
+                        );
+                      },
+                    ),
                   ),
                 if (!isGameOver)
+                  SizedBox(height: 40,),
+                if (!isGameOver)
                   TimerWidget(onTimerReset: onTimerReset),
+                
               ]
             ),
         )
