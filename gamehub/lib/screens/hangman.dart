@@ -201,7 +201,7 @@ class _HangmanState extends State<Hangman> {
                     children: [
                       SizedBox(height: 20),
                       Text(
-                        isGameWon ? 'Congratulations, you win!' : 'Womp womp, game Over!',
+                        isGameWon ? 'Congratulations, you win!' : 'Womp womp, game over!',
                         style: GoogleFonts.kanit(
                           fontSize: 28,
                           color: Colors.red

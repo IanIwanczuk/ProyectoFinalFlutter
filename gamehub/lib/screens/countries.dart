@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:gamehub/resources/timer.dart';
 import 'package:http/http.dart' as http;
 
 import '../screens/screens.dart';
@@ -15,42 +16,61 @@ class _CountriesState extends State<Countries> {
   late double screenWidth = MediaQuery.of(context).size.width;
   late double screenHeight = MediaQuery.of(context).size.height;
   List<Map<String, dynamic>> countryList = [];
+  List<Map<String, dynamic>> options = [];
+  
   Map<String, dynamic>? secretCountry;
+  bool isGameOver = false;
+  late int correctAnswer;
 
 
   @override
   void initState() {
     super.initState();
-    cargarDatos();
+    startGame();
   }
 
-  Future<void> cargarDatos() async {
-    List<Map<String, dynamic>> countryList = await getCountryList();
-
+  Future<void> startGame() async {
+    if (countryList.isEmpty) {
+      countryList = await getCountryList();
+    }
     Random random = Random();
-    int randomIndex = random.nextInt(countryList.length); // Generate a random index
+    int randomIndex = random.nextInt(countryList.length);
+
     secretCountry = countryList[randomIndex];
-    print(secretCountry!.keys.first);
+    int secretIndex = randomIndex;
+    correctAnswer = random.nextInt(4) + 1;
+
+    int count = 1;
+    while ((randomIndex = random.nextInt(countryList.length)) != secretIndex && options.length != 4) {
+      if (count == correctAnswer) {
+        options.add(secretCountry!); count++;
+        continue;
+      }
+      options.add(countryList[randomIndex]); count++;
+    }
     setState(() {});
   }
 
   Future<List<Map<String, dynamic>>> getCountryList() async {
-  final url = Uri.parse("https://flagcdn.com/en/codes.json"); // Replace with your API URL
-  final response = await http.get(url);
+    final url = Uri.parse("https://flagcdn.com/en/codes.json"); 
+    final response = await http.get(url);
 
-  if (response.statusCode == 200) {
-    Map<String, dynamic> jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonData = json.decode(response.body);
 
-    // Convert the Map into a List of key-value pairs
-    List<Map<String, dynamic>> dataList = jsonData.entries
-        .map((entry) => {entry.key: entry.value})
-        .toList();
+      List<Map<String, dynamic>> dataList = jsonData.entries.map((entry) => {entry.key: entry.value}).toList();
 
-    return dataList;
-  } else {
-    throw Exception("Failed to load countryList");
+      return dataList;
+    } else {
+      throw Exception("Failed to load countryList");
+    }
   }
-}
+
+  void onTimerReset() {
+    print("Tiempo acabado");
+    isGameOver = true;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +112,32 @@ class _CountriesState extends State<Countries> {
                   ),
                 ),
                 SizedBox(height: 20,),
-                const Text("AAAAA"),
+                if (!isGameOver)
+                  GridView.builder(
+                    shrinkWrap: true,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2, // ✅ 2 columns
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                    ),
+                    itemCount: 4,
+                    itemBuilder: (context, index) {
+                      final option = options[index];
+
+                      return ElevatedButton(
+                        onPressed: () => {
+                          if (option.values.first == secretCountry!.values.first) {
+                            print("EXITO... Opción: ${option.values.first}  Respuesta: ${secretCountry!.values.first}"),
+                          } else {
+                            print("ERROR!!! Opción: ${option.values.first}  Respuesta: ${secretCountry!.values.first}"),
+                          }
+                        },
+                        child: Text(option.values.first),
+                      );
+                    },
+                  ),
+                if (!isGameOver)
+                  TimerWidget(onTimerReset: onTimerReset),
               ]
             ),
         )
