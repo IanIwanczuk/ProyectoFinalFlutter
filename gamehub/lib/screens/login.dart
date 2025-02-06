@@ -1,17 +1,19 @@
 import '../models/current_user.dart';
 import 'screens.dart';
 
+/// Pantalla de login, la primera que se muestra en la aplicación, mostramos el logo de la aplicación
+/// con un container y un formulario dentro para que el usuario ingrese sus credenciales
 class HomeW extends StatelessWidget {
   const HomeW ({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // late double screenWidth = MediaQuery.of(context).size.width;
-    // late double screenHeight = MediaQuery.of(context).size.height;
-
     final formKey = GlobalKey<FormState>();
     final TextEditingController userController = TextEditingController(text: "");
     final TextEditingController passwordController = TextEditingController(text: "");
+
+    // Creamos una instancia de DatabaseService para hacer consultas a la base de datos
+    // en FireBase
     DatabaseService dbService = DatabaseService();
 
     return Scaffold(
@@ -143,6 +145,7 @@ class HomeW extends StatelessWidget {
 
                           if (isValid != null) {
                             if (isValid) {
+                              // Verificamos si las credenciales que nos proporciona el usuario realmente existe o no
                               currentUser = await dbService.isUserValid(userController.text, passwordController.text);
 
                               if (currentUser != null) {

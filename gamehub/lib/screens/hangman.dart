@@ -4,6 +4,10 @@ import 'dart:math';
 import 'package:flutter/services.dart';
 import '../screens/screens.dart';
 
+/// Juego del ahorcado, el usuario tendrá una palabra de 6 caracteres que adivinar en medio de la pantalla,
+/// tenemos la imagen del ahorcado, la palabra oculta y las letras para adivinar la palabra. Por cada letra
+/// correcta que escoga el usuario, la mostraremos en la palabra oculta. Si tiene un fallo, mostramos más
+/// partes del ahorcado, hasta que el usuario pierda y mostremos el mensaje de derrota
 class Hangman extends StatefulWidget {
   const Hangman({super.key});
 
@@ -35,7 +39,8 @@ class _HangmanState extends State<Hangman> {
     loadWords();
   }
 
-  // Método
+  /// Método que utilizamos por primera vez para cargar las palabras del JSON a una variable de lista, cuando
+  /// termine de cargar todo, comenzamos una partida
   Future<void> loadWords() async {
     try {
       final String data = await rootBundle.loadString('lib/resources/words.json');
@@ -50,18 +55,16 @@ class _HangmanState extends State<Hangman> {
     }
   }
 
+  /// Método que comienza la partida, limpiamos la lista de letras presionadas, reiniciamos contadores de errores,
+  /// variables de si el juego terminó, si ganó el jugador, y luego seleccionamos la palabra secreta
   void startNewGame() {
     setState(() {
       guessedLetters.clear();
       errorCount = 0;
       isGameOver = false;
       isGameWon = false;
-      if (words.isNotEmpty) {
-        final random = Random();
-        secretWord = words[random.nextInt(words.length)].toUpperCase();
-      } else {
-        secretWord = null;
-      }
+      final random = Random();
+      secretWord = words[random.nextInt(words.length)].toUpperCase();
     });
   }
 
@@ -101,6 +104,9 @@ class _HangmanState extends State<Hangman> {
     });
   }
 
+  /// Método que construye el los guiones que aparecen en pantalla, si el juego ya terminó mostramos la palabra
+  /// completa, de lo contrario, mostramos solo las letras que haya adivinado el usuario y que correspondan con
+  /// la palabra secreta
   Widget buildWordDisplay() {
     if (secretWord == null) return Container();
 
@@ -128,6 +134,7 @@ class _HangmanState extends State<Hangman> {
     );
   }
 
+  /// Método que nos muestra UN boton para adivinar la palabra, retorna un solo botón
   Widget buildLetterButton(String letter) {
     return Padding(
       padding: const EdgeInsets.all(2.0),
@@ -159,7 +166,9 @@ class _HangmanState extends State<Hangman> {
     );
   }
 
-  Widget buildLetterButtons() {
+  /// Generamos una lista de widgets (Botones) según las letras posibles (A-Z), y lo
+  /// envolvemos en un Widget de tipo Wrap()
+  Widget buildButtons() {
     const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     return Wrap(
       alignment: WrapAlignment.center,
@@ -167,6 +176,7 @@ class _HangmanState extends State<Hangman> {
     );
   }
 
+  /// Este método simplemente verifica los errores que tenemos, y pone la imagen correspondiente
   Widget buildHangmanImage() {
     String imagePath = 'assets/images/hangman$errorCount.png';
     return Image.asset(
@@ -221,13 +231,13 @@ class _HangmanState extends State<Hangman> {
                             ),
                           ),
                         ),
-                        child: Text('Try again?', style: GoogleFonts.jollyLodger(fontSize: 30, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 219, 0, 0), letterSpacing: 4),),
+                        child: Text(isGameWon ? "Next game" : "Try again?", style: GoogleFonts.jollyLodger(fontSize: 30, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 219, 0, 0), letterSpacing: 4),),
                       ),
                       SizedBox(height: 60,)
                     ],
                   ),
                 if (!isGameOver)
-                  buildLetterButtons(),
+                  buildButtons(),
                 const SizedBox(height: 20),
               ],
             ),

@@ -4,6 +4,7 @@ class User {
   String pwd;
   String sex;
 
+  /// Constructor por defecto
   User({
     required this.email,
     required this.user,
@@ -11,6 +12,7 @@ class User {
     required this.sex,
   });
 
+  /// De un JSON que recibimos, lo pasamos a un objeto User
   User.fromJson(Map<String, Object?> json)
       : this(
         email: json['email']! as String,
@@ -19,6 +21,8 @@ class User {
         sex: json['sex']! as String,
       );
 
+  /// Al objeto User existente, le copiamos todos los parametros nombrados
+  /// que le pasemos
   User copyWith({
     String? email,
     String? user,
@@ -32,6 +36,7 @@ class User {
       sex: sex ?? this.sex);
     }
 
+  /// Retornamos el objeto User como un JSON
   Map<String, Object?> toJson() {
     return {
       'email': email,

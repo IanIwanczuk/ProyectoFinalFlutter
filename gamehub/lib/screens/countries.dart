@@ -5,6 +5,9 @@ import 'package:http/http.dart' as http;
 
 import '../screens/screens.dart';
 
+/// Juego de adivinar banderas, haremos una llamada a la API para obtener la lista de todos los países posibles, luego
+/// de esa lista seleccionamos un país al azar para poner como adivinanza y en qué botón estará la respuesta correcta.
+/// Una vez tengamos la lista de países completa, podemos comenzar el juego.
 class Countries extends StatefulWidget {
   const Countries({super.key});
 
@@ -15,58 +18,79 @@ class Countries extends StatefulWidget {
 class _CountriesState extends State<Countries> {
   late double screenWidth = MediaQuery.of(context).size.width;
   late double screenHeight = MediaQuery.of(context).size.height;
+
+  // Lista de todos los países posibles
   List<Map<String, dynamic>> countryList = [];
+
+  // Lista de las opciones que aparecerán en pantalla
   List<Map<String, dynamic>> options = [];
   
+  // El país a adivinar
   Map<String, dynamic>? secretCountry;
   late bool isGameOver;
   late bool isGameWon;
+
+  // Índice de la respuesta correcta en el array de opciones
   late int correctAnswer;
+
+  // Contador de puntos
   late int count;
 
-
+  /// Al iniciar la pantalla, lo primero que hacemos es obtener la lista de de países desde la API
   @override
   void initState() {
     super.initState();
+    retrieveList();
+  }
+
+  /// Método asíncrono que espera a recivir la solicitud de la API, y guardamos la respuesta como lista
+  /// en la variable countryLis. Una vez tenemos la lista de países, comenzamos la partida
+  Future<void> retrieveList() async {
+    countryList = await getCountryList();
     count = 0;
+    isGameWon = false;
     startGame();
   }
 
-  startNewGame() {
+  /// Método que se utilizará siempre para reiniciar la partida, así que lo primero que verificamos es si
+  /// el usuario perdió, si es así reiniciamos los puntos
+  void startGame() {
     if (!isGameWon) {
       count = 0;
-    }
-    startGame();
-  }
-
-  Future<void> startGame() async {
-    if (countryList.isEmpty) {
-      countryList = await getCountryList();
     }
     Random random = Random();
     int randomIndex = random.nextInt(countryList.length);
 
+    // Obtenemos un índice aleatorio de la lista de países, y lo guardamos como el país secreto
+    // También generamos el índice de la respuesta correcta
     secretCountry = countryList[randomIndex];
     int secretIndex = randomIndex;
     correctAnswer = random.nextInt(4) + 1;
 
-    int count = 1;
+    int counter = 1;
+    // Insertamos 3 países al azar de la lista de posibles países y el país correcto. Usamos el índice de
+    // respuesta correcta (correctAnswer) para añadirla a la lista, los otros países al azar se añaden en
+    // cualquier orden
     while ((randomIndex = random.nextInt(countryList.length)) != secretIndex && options.length != 4) {
-      if (count == correctAnswer) {
-        options.add(secretCountry!); count++;
+      if (counter == correctAnswer) {
+        options.add(secretCountry!); counter++;
         continue;
       }
-      options.add(countryList[randomIndex]); count++;
+      options.add(countryList[randomIndex]); counter++;
     }
     setState(() {
       isGameOver = false; isGameWon = false;
     });
   }
-
+  
+  /// Método que llama a la API y obtiene la lista de todos los países posibles
   Future<List<Map<String, dynamic>>> getCountryList() async {
+
+    // Guardamos el URL de la API y hacemos la solicitud de manera asíncrona
     final url = Uri.parse("https://flagcdn.com/en/codes.json"); 
     final response = await http.get(url);
 
+    // Si la respuesta sale bien, jugardamos todo en un JSON, para posteriormente guardarlo en una List<Map>
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(response.body);
 
@@ -78,6 +102,8 @@ class _CountriesState extends State<Countries> {
     }
   }
 
+  /// Método que se llama cada vez que el temporizador llega a 0, terminamos la partida y determinamos que el
+  /// jugador ha perdido. Limpiamos la lista de opciones, y actualizamos el estado
   void onTimerReset() {
     isGameOver = true; isGameWon = false;
     options.clear();
@@ -96,7 +122,9 @@ class _CountriesState extends State<Countries> {
           ),
         ),
         child: Center(
-          child: secretCountry == null
+          // Aquí simplemente verificamos, si la lista de países está vacía, mostramos un símbolo que enseña que está
+          // cargando. Cuando termine, muestra la interfaz del juego
+          child: countryList.isEmpty
             ? const CircularProgressIndicator(color: Colors.green,)
             : Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -138,7 +166,7 @@ class _CountriesState extends State<Countries> {
                   ElevatedButton(
                     onPressed: () {
                       options.clear();
-                      startNewGame();
+                      startGame();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: isGameWon ? Colors.green : Colors.red,
@@ -203,7 +231,6 @@ class _CountriesState extends State<Countries> {
                   SizedBox(height: 40,),
                 if (!isGameOver)
                   TimerWidget(onTimerReset: onTimerReset),
-                
               ]
             ),
         )

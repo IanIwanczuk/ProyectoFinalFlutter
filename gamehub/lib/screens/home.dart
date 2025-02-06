@@ -3,6 +3,10 @@ import 'package:gamehub/resources/liveclock.dart';
 
 import 'screens.dart';
 
+
+/// Pantalla principal donde se mostrará el nombre del usuario loggeado, y los juegos
+/// de la aplicación. También tendremos un floating action button que permite al usuario
+/// editar sus datos en la base de datos
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -91,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Image.asset("assets/images/contact.png", height: 40, width: 40,),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endContained,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

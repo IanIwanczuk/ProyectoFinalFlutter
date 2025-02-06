@@ -1,6 +1,12 @@
 import '../screens/screens.dart';
-import 'package:intl/intl.dart';
 
+/**
+ * Clase que utilizamos para guardar recursos varios, estilos para botones o widgets específicos en cada
+ * pantalla o parte del código
+ */
+
+/// Método para generar el AppBar que se repite en todas las pantallas, recibe como
+/// parámetros el context, la ruta a la que nos envía el botón, y la imagen del botón
 AppBar getAppBar(context, String route, String leftbutton) {
   return AppBar(
     leading: GestureDetector(
@@ -21,16 +27,7 @@ AppBar getAppBar(context, String route, String leftbutton) {
   );
 }
 
-RoundedRectangleBorder getFloatingActStyle() {
-  return RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(5),
-    side: BorderSide(
-      color: const Color.fromARGB(255, 255, 174, 0),
-      width: 2,
-    ),
-  );
-}
-
+/// Capitalizamos la primera letra de un String
 String capitalizeFirstLetter(String? str) {
   if (str == null) {
     return "null";
@@ -38,6 +35,8 @@ String capitalizeFirstLetter(String? str) {
   return str[0].toUpperCase() + str.substring(1);
 }
 
+/// Método para cenerar los contenedores en la pantalla principal, recibe comoo parametros el ancho de la
+/// pantalla, el texto del juego, el estilo del juego, la ruta a la que lleva el contenedor, y el context
 GestureDetector getGameContainer(double screenWidth, String image, String textLabel, TextStyle textStyle, String route, context) {
     return GestureDetector(
       onTap: () {
@@ -74,33 +73,8 @@ GestureDetector getGameContainer(double screenWidth, String image, String textLa
     );
 }
 
-Container buildTimeContainer() {
-  String currentTime = DateFormat('HH:mm.ss').format(DateTime.now());
-
-  return Container(
-    padding: const EdgeInsets.all(10),
-    decoration: BoxDecoration(
-      color: Colors.blueAccent,
-      borderRadius: BorderRadius.circular(8),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black,
-          blurRadius: 6,
-          offset: Offset(0, 3),
-        ),
-      ],
-    ),
-    child: Text(
-      currentTime,
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-  );
-}
-
+/// Método simple para lanzar un alertDialog, le pasamos el context, el título
+/// y el mensaje
 void alertDialog(BuildContext context, String title, String message) {
   showDialog(
     context: context,
@@ -115,5 +89,33 @@ void alertDialog(BuildContext context, String title, String message) {
         ),
       );
     },
+  );
+}
+
+/// Método que genera los botones del BlackJack, le pasamos como parámetro el color del fondo, el color del borde,
+/// el color de la fuente, la función que va a ejecutar el botón, y el texto de dentro
+ElevatedButton generateBlackJackButton(Color background, Color border, Color fontColor, Function() func, String text) {
+  return ElevatedButton(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: background,
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: border,
+          width: 2,
+        ),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    ),
+    onPressed: func,
+    child: Text(
+      text,
+      style: GoogleFonts.joan(
+        fontWeight: FontWeight.bold,
+        fontSize: 20,
+        color: fontColor,
+      ),
+    ),
   );
 }

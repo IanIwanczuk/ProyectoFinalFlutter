@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
+/// Temporizador de 15 segundos, lo usaremos para medir el tiempo en el juego de adivinar banderas y
+/// cada vez que termine el tiempo llamaremos a la función "onTimerReset" en la pantalla del juego.
 class TimerWidget extends StatefulWidget {
+  // Con esta linea le decimos qué ejecutar cuando termine el temporizador
   final VoidCallback onTimerReset;
   const TimerWidget({super.key, required this.onTimerReset});
 
@@ -9,17 +12,19 @@ class TimerWidget extends StatefulWidget {
   TimerWidgetState createState() => TimerWidgetState();
 }
 
-class TimerWidgetState extends State<TimerWidget> {
+class TimerWidgetState extends State<TimerWidget> {  
   int secondsRemaining = 6;
   int milliseconds = 0;
   late Timer timer;
 
+  /// Método que inicializa el widget
   @override
   void initState() {
     super.initState();
     startTimer();
   }
 
+  /// Comenzamos el temporizador, y lo actualizamos cada 10 milisegundos
   void startTimer() {
     timer = Timer.periodic(Duration(milliseconds: 10), (timer) {
       setState(() {
@@ -32,6 +37,8 @@ class TimerWidgetState extends State<TimerWidget> {
           } else {
             secondsRemaining = 6;
             milliseconds = 0;
+
+            // Con esta línea ejecutamos la función que hemos recibido
             widget.onTimerReset();
           }
         }
@@ -39,12 +46,14 @@ class TimerWidgetState extends State<TimerWidget> {
     });
   }
 
+  /// Método que se llama cuando eliminamos el widget
   @override
   void dispose() {
     timer.cancel();
     super.dispose();
   }
 
+  /// Formato para el tiempo
   String formatTime(int seconds, int milliseconds) {
     String millis = milliseconds.toString().padLeft(3, '0');
     return '$seconds.$millis';

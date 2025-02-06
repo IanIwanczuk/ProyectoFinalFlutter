@@ -1,6 +1,8 @@
 import 'screens.dart';
 import '../models/user.dart';
 
+/// Pantalla de registro para el usuario, se le pide el correo electrónico, el usuario,
+/// la contraseña dos veces, y el sexo.
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -9,8 +11,6 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  // late double screenWidth = MediaQuery.of(context).size.width;
-  // late double screenHeight = MediaQuery.of(context).size.height;
   final formKey = GlobalKey<FormState>();
   String? selectedSex = "Hombre";
 
@@ -18,6 +18,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController userController = TextEditingController(text: "");
   final TextEditingController password1Controller = TextEditingController(text: "");
   final TextEditingController password2Controller = TextEditingController(text: "");
+
+  // Creamos una instancia de la clase DatabaseService para lanzar consultas a la base
+  // de datos
   DatabaseService dbService = DatabaseService();
 
   @override
@@ -241,13 +244,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                         if (isValid != null) {
                           if (isValid) {
+                            // Verificamos si el usuario y el correo está disponible
                             bool userAvl = await dbService.isUserAvailable(userController.text);
                             bool emailAvl = await dbService.isEmailAvailable(correoController.text);
 
+                            // Si el ambos están disponibles, podemos crear un nuevo usuario con esas credenciales y el 
+                            // resto de información
                             if (userAvl && emailAvl) {
                               String sex = selectedSex!;
                               User nuevo = User(email: correoController.text, user: userController.text, pwd: password1Controller.text, sex: sex);
 
+                              // Sentencia para añadir el usuario a la base de datos
                               dbService.addUser(nuevo);
 
                               // ignore: use_build_context_synchronously
