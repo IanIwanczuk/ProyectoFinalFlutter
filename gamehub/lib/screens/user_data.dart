@@ -3,7 +3,9 @@ import 'package:gamehub/models/user.dart';
 
 import 'screens.dart';
 
-
+/// Pantalla de actualización de datos del usuario, tiene opción de cambiar su correo,
+/// su nombre de usuario o su contraseña. Siempre se le va a pedir como requisito su
+/// contraseña para poder realizar cambios
 class UpdateData extends StatefulWidget {
   const UpdateData({super.key});
 
@@ -18,6 +20,7 @@ class _UpdateDataState extends State<UpdateData> {
   final TextEditingController correoController = TextEditingController(text: currentUser!.email);
   final TextEditingController passwordController = TextEditingController(text: "");
 
+  // Instancia de la clase DatabaseService que servirá para tirar consultas
   DatabaseService dbService = DatabaseService();
 
   @override
@@ -105,9 +108,13 @@ class _UpdateDataState extends State<UpdateData> {
                     bool? isValid = formKey.currentState?.validate();
                     if (isValid != null) {
                       if (isValid) {
+                        // Creamos un usuario de copia con todos los datos del usuario loggeado actualmente
                         User usuario = currentUser!.copyWith(user: currentUser!.user, email: currentUser!.email, pwd: currentUser!.pwd, sex: currentUser!.sex);
+                        // Variable para ver si algún dato cambió o no
                         bool changed = false;
 
+                        // Verificamos cada uno de los controladores de los campos, y si un dato es diferente al del
+                        // usuario loggeado actualmente, lo cambiamos, y determinamos que se han hecho cambios
                         if (usuarioController.text != usuario.user) {
                           usuario.user = usuarioController.text; changed = true;
                         }
@@ -118,6 +125,9 @@ class _UpdateDataState extends State<UpdateData> {
                           usuario.pwd = passwordController.text; changed = true;
                         }
 
+                        // Si se han hecho cambios, lo subimos a la base de datos, obteniendo el ID de Firebase del
+                        // usuario, y el objeto temporal de usuario que hemos creado. Además actualizamos la variable
+                        // del usuario loggeado actualmente
                         if (changed) {
                           dbService.updateUser(currentId!, usuario);
                           currentUser = usuario;

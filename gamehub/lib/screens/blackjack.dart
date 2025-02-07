@@ -4,11 +4,11 @@ import 'screens.dart';
 
 
 /// Juego BlackJack con cartas de poker traídas de una API, tenemos dos variables de mazos de cartas, una
-/// para el jugador y otra para la casa. El jugador tiene tres opciones, pedir una carta, plantarse, o reinciar
-/// - Tiene prioridad la casa, si la ambos llegan a 21, gana la casa
+/// para el jugador y otra para la casa. El jugador tiene tres opciones, pedir una carta, plantarse, o reiniciar
+/// - Tiene prioridad la casa, si ambos llegan a 21, gana la casa
 /// - Si la casa se pasa de 21, gana el jugador. Si el jugador se pasa, gana la casa
 /// - Se gana por menor diferencia a 21. Si la casa tiene 17 y el jugador 18, gana el jugador
-/// - El jugador no puede reinciar la partida hasta que termine la ronda
+/// - El jugador no puede reiniciar la partida hasta que termine la ronda
 class Blackjack extends StatefulWidget {
   const Blackjack({super.key});
 

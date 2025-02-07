@@ -5,6 +5,9 @@ import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'routes/routes.dart';
 
+/// Función principal de la aplicación, la hacemos asíncrona y usamos WidgetsFlutterBinding.ensureInitialized()
+/// para que todos los widgets estén inicializados. Además nos aseguramos de establecer la conexión con la base
+/// de datos en FireBase
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
