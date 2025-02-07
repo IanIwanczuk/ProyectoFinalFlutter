@@ -46,7 +46,7 @@ class LiveClockState extends State<LiveClock> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 150,
+      width: 180,
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 5),
       decoration: BoxDecoration(
         color: Color(0xFF2F2F2F),
